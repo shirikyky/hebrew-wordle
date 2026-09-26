@@ -7,7 +7,7 @@ import {
   getDailyIndex,
   STATUS,
 } from '../src/wordle.js';
-import { WORDS } from '../src/words.js';
+import { ANSWERS, WORDS } from '../src/words.js';
 
 const { correct, present, absent } = STATUS;
 
@@ -79,25 +79,32 @@ test('אותיות כפולות שתיהן מדויקות (כולל סופית)'
   );
 });
 
-test('רשימת המילים: 50+, כולן בנות 5 אותיות וייחודיות', () => {
-  assert.ok(WORDS.length >= 50, `expected >=50 words, got ${WORDS.length}`);
-  const seen = new Set();
-  for (const w of WORDS) {
-    assert.equal([...w].length, 5, `"${w}" is not 5 letters`);
-    assert.ok(!seen.has(w), `duplicate word: "${w}"`);
-    seen.add(w);
+test('רשימת המילים: תקינה וייחודית, והתשובות תת-קבוצה של המילון', () => {
+  assert.ok(ANSWERS.length >= 50, `expected >=50 answers, got ${ANSWERS.length}`);
+  assert.ok(WORDS.length >= 1000, `expected >=1000 valid words, got ${WORDS.length}`);
+  for (const [name, list] of [['ANSWERS', ANSWERS], ['WORDS', WORDS]]) {
+    const seen = new Set();
+    for (const w of list) {
+      assert.equal([...w].length, 5, `${name}: "${w}" is not 5 letters`);
+      assert.ok(!seen.has(w), `${name}: duplicate word "${w}"`);
+      seen.add(w);
+    }
+  }
+  const wordSet = new Set(WORDS);
+  for (const a of ANSWERS) {
+    assert.ok(wordSet.has(a), `answer "${a}" is missing from WORDS`);
   }
 });
 
-test('המילה היומית דטרמיניסטית ומתוך הרשימה', () => {
+test('המילה היומית דטרמיניסטית ומתוך רשימת התשובות', () => {
   const d1 = new Date(Date.UTC(2026, 0, 1));
   const d2 = new Date(Date.UTC(2026, 0, 1));
   assert.equal(getDailyWord(d1), getDailyWord(d2));
-  assert.ok(WORDS.includes(getDailyWord(d1)));
+  assert.ok(ANSWERS.includes(getDailyWord(d1)));
 });
 
 test('אינדקס יומי מתקדם ב-1 ליום', () => {
   const a = new Date(Date.UTC(2026, 5, 10));
   const b = new Date(Date.UTC(2026, 5, 11));
-  assert.equal(getDailyIndex(b), (getDailyIndex(a) + 1) % WORDS.length);
+  assert.equal(getDailyIndex(b), (getDailyIndex(a) + 1) % ANSWERS.length);
 });
