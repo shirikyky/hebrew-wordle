@@ -1,7 +1,7 @@
 // Hebrew Wordle — לוגיקת המשחק המרכזית (pure, ללא תלות ב-DOM).
 // ניתן לייבא גם בדפדפן (ES module) וגם ב-Node (node:test).
 
-import { WORDS } from './words.js';
+import { ANSWERS } from './words.js';
 
 export const STATUS = Object.freeze({
   correct: 'correct', // 🟩 ירוק — אות נכונה במקום נכון
@@ -69,9 +69,9 @@ export function getDailyIndex(date = new Date()) {
     date.getUTCDate(),
   );
   const days = Math.floor((day - EPOCH) / MS_PER_DAY);
-  return ((days % WORDS.length) + WORDS.length) % WORDS.length;
+  return ((days % ANSWERS.length) + ANSWERS.length) % ANSWERS.length;
 }
 
 export function getDailyWord(date = new Date()) {
-  return WORDS[getDailyIndex(date)];
+  return ANSWERS[getDailyIndex(date)];
 }
